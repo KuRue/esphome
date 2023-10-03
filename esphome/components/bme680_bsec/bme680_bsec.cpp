@@ -1,4 +1,5 @@
 #include "bme680_bsec.h"
+#include "esphome/core/log.h"
 
 namespace esphome {
 namespace bme680_bsec {
@@ -22,7 +23,7 @@ void BME680BSECComponent::delay_us(uint32_t period, void *intfPtr) {
 }
 
 void BME680BSECComponent::setup() {
-  ESP_LOGCONFIG(TAG, "Setting up BME680 via BSEC...");
+  ESP_LOGD(TAG, "Setting up BME680 via BSEC...");
   BME680BSECComponent::instance = this;
 
   this->bsec_status_ = BSEC::bsec_init();  // Use the BSEC namespace
