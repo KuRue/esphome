@@ -1,23 +1,25 @@
-#include <bsec2.h>
-#include "esphome/core/component.h"
-#include "esphome/components/sensor/sensor.h"
 #include "bme680_bsec.h"
-#include "esphome/core/log.h"
-#include "esphome/core/helpers.h"
-#include <string>
 
 namespace esphome {
 namespace bme680_bsec {
-#ifdef USE_BSEC
-static const char *const TAG = "bme680_bsec.sensor";
 
-#ifdef BME680_BSEC_CONFIGURATION
-static const uint8_t bsec_configuration[] = BME680_BSEC_CONFIGURATION;
+#ifdef USE_BSEC
+using namespace BSEC;
 #endif
 
-static const std::string IAQ_ACCURACY_STATES[4] = {"Stabilizing", "Uncertain", "Calibrating", "Calibrated"};
+BME680BSECComponent *BME680BSECComponent::instance;
 
-BME680BSECComponent *BME680BSECComponent::instance;  // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
+int8_t BME680BSECComponent::read_bytes_wrapper(uint8_t a_register, uint8_t *data, uint32_t len, void *intfPtr) {
+  return BME680BSECComponent::instance->read_bytes(a_register, data, len, intfPtr);
+}
+
+int8_t BME680BSECComponent::write_bytes_wrapper(uint8_t a_register, const uint8_t *data, uint32_t len, void *intfPtr) {
+  return BME680BSECComponent::instance->write_bytes(a_register, data, len, intfPtr);
+}
+
+void BME680BSECComponent::delay_us(uint32_t period, void *intfPtr) {
+  BME680BSECComponent::instance->delay_us(period, intfPtr);
+}
 
 void BME680BSECComponent::setup() {
   ESP_LOGCONFIG(TAG, "Setting up BME680 via BSEC...");
@@ -29,6 +31,7 @@ void BME680BSECComponent::setup() {
     this->mark_failed();
     return;
   }
+
   this->bme680_.intf = BME68X_I2C_INTF;
   this->bme680_.read = BME680BSECComponent::read_bytes_wrapper;
   this->bme680_.write = BME680BSECComponent::write_bytes_wrapper;
@@ -41,14 +44,14 @@ void BME680BSECComponent::setup() {
     this->mark_failed();
     return;
   }
-  #ifdef BME680_BSEC_CONFIGURATION
+
+#ifdef BME680_BSEC_CONFIGURATION
   this->set_config_(bsec_configuration, sizeof(bsec_configuration));
   if (this->bsec_status_ != BSEC_OK) {
     this->mark_failed();
     return;
   }
-
-  #endif
+#endif
 
   this->update_subscription_();
   if (this->bsec_status_ != BSEC_OK) {
