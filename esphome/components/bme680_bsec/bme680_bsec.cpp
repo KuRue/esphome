@@ -501,6 +501,5 @@ void BME680BSECComponent::save_state_(uint8_t accuracy) {
 
   ESP_LOGI(TAG, "Saved state");
 }
-#endif
 }  // namespace bme680_bsec
 }  // namespace esphome
