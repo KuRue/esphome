@@ -1,5 +1,3 @@
-// bme680_bsec.h
-
 #pragma once
 
 #include "esphome/core/component.h"
@@ -17,10 +15,6 @@
 namespace esphome {
 namespace bme680_bsec {
 #ifdef USE_BSEC
-
-namespace BSEC {
-
-#endif
 
 enum SampleRate {
   SAMPLE_RATE_LP = 0,
@@ -112,10 +106,6 @@ class BME680BSECComponent : public Component, public i2c::I2CDevice {
   sensor::Sensor *co2_equivalent_sensor_;
   sensor::Sensor *breath_voc_equivalent_sensor_;
 };
-
-#ifdef USE_BSEC
-}  // namespace BSEC
 #endif
-
 }  // namespace bme680_bsec
 }  // namespace esphome
