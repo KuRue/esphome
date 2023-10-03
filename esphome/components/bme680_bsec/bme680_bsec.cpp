@@ -18,13 +18,25 @@ BME680BSECComponent *BME680BSECComponent::instance;  // NOLINT(cppcoreguidelines
 
 void BME680BSECComponent::setup() {
   ESP_LOGCONFIG(TAG, "Setting up BME680 via BSEC...");
-  BME680BSECComponent::instance = this;
+  //BME680BSECComponent::instance = this;
 
-  this->bsec_status_ = bsec_init();
-  if (this->bsec_status_ != BSEC_OK) {
-    this->mark_failed();
+  if (bme680_.begin(BME68X_I2C_INTF, i2c::I2CAddress(0x76), delay_wrapper, this)) {
+    ESP_LOGCONFIG(TAG, "BME680 sensor initialized successfully.");
+  } else {
+    ESP_LOGE(TAG, "Failed to initialize BME680 sensor.");
     return;
   }
+
+  if (!instance->begin(BME68X_I2C_INTF, bme680_bsec::read_bytes_wrapper, bme680_bsec::write_bytes_wrapper, bme680_bsec::delay_us, this)) {
+    ESP_LOGE(TAG, "Failed to initialize BSEC library.");
+    return;
+  }
+  
+  //this->bsec_status_ = bsec_init();
+  //if (this->bsec_status_ != BSEC_OK) {
+  //  this->mark_failed();
+  //  return;
+  //}
 
   this->bme680_.intf = BME68X_I2C_INTF;
   this->bme680_.read = BME680BSECComponent::read_bytes_wrapper;
