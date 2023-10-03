@@ -1,3 +1,6 @@
+#include <bsec2.h>
+#include "esphome/core/component.h"
+#include "esphome/components/sensor/sensor.h"
 #include "bme680_bsec.h"
 #include "esphome/core/log.h"
 #include "esphome/core/helpers.h"
@@ -22,10 +25,10 @@ void BME680BSECComponent::setup() {
 
   this->bsec_status_ = bsec_init();
   if (this->bsec_status_ != BSEC_OK) {
+    ESP_LOGE(TAG, "BSEC initialization failed");
     this->mark_failed();
     return;
   }
-
   this->bme680_.intf = BME68X_I2C_INTF;
   this->bme680_.read = BME680BSECComponent::read_bytes_wrapper;
   this->bme680_.write = BME680BSECComponent::write_bytes_wrapper;
@@ -34,6 +37,7 @@ void BME680BSECComponent::setup() {
 
   this->bme680_status_ = bme68x_init(&this->bme680_);
   if (this->bme680_status_ != BME68X_OK) {
+    ESP_LOGE(TAG, "BME680 initialization failed");
     this->mark_failed();
     return;
   }
