@@ -20,13 +20,13 @@ void BME680BSECComponent::setup() {
   ESP_LOGCONFIG(TAG, "Setting up BME680 via BSEC...");
   //BME680BSECComponent::instance = this;
 
-  if (bme680_.begin(BME68X_I2C_INTF, i2c::I2CAddress(0x76), delay_wrapper, this)) {
-    ESP_LOGCONFIG(TAG, "BME680 sensor initialized successfully.");
-  } else {
+  // Initialize BME680 sensor
+  if (!bme680_.begin(BME68X_I2C_INTF, 0x76)) {
     ESP_LOGE(TAG, "Failed to initialize BME680 sensor.");
     return;
   }
 
+  // Set up BSEC library
   if (!instance->begin(BME68X_I2C_INTF, bme680_bsec::read_bytes_wrapper, bme680_bsec::write_bytes_wrapper, bme680_bsec::delay_us, this)) {
     ESP_LOGE(TAG, "Failed to initialize BSEC library.");
     return;
