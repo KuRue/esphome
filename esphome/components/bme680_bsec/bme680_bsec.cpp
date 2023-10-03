@@ -20,12 +20,17 @@ void BME680BSECComponent::setup() {
   ESP_LOGCONFIG(TAG, "Setting up BME680 via BSEC...");
   BME680BSECComponent::instance = this;
 
-  this->bsec_status_ = bsec_init();
-  if (this->bsec_status_ != BSEC_OK) {
+  //this->bsec_status_ = bsec_init();
+  //if (this->bsec_status_ != BSEC_OK) {
+  //  this->mark_failed();
+  //  return;
+  //}
+
+  if (! begin()) {
     this->mark_failed();
     return;
   }
-
+  
   this->bme680_.intf = BME68X_I2C_INTF;
   this->bme680_.read = BME680BSECComponent::read_bytes_wrapper;
   this->bme680_.write = BME680BSECComponent::write_bytes_wrapper;
