@@ -1,5 +1,5 @@
-#include "bme680_bsec.h"
 #include "esphome/core/log.h"
+#include "bme680_bsec.h"
 
 namespace esphome {
 namespace bme680_bsec {
