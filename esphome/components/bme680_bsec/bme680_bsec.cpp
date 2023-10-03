@@ -18,6 +18,7 @@ static const uint8_t bsec_configuration[] = BME680_BSEC_CONFIGURATION;
 static const std::string IAQ_ACCURACY_STATES[4] = {"Stabilizing", "Uncertain", "Calibrating", "Calibrated"};
 
 BME680BSECComponent *BME680BSECComponent::instance;  // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
+BSEC::bsec_init();
 
 void BME680BSECComponent::setup() {
   ESP_LOGCONFIG(TAG, "Setting up BME680 via BSEC...");
