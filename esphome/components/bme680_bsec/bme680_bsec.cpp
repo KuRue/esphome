@@ -18,7 +18,7 @@ int8_t BME680BSECComponent::write_bytes_wrapper(uint8_t a_register, const uint8_
   return static_cast<BME680BSECComponent *>(intfPtr)->write_bytes(a_register, data, len);
 }
 
-void BME680BSECComponent::delay_us(uint32_t period, void *intfPtr) {
+void BME680BSECComponent::delay_us(uint32_t &period, void *intfPtr) {
   static_cast<BME680BSECComponent *>(intfPtr)->delay_us(period);
 }
 
