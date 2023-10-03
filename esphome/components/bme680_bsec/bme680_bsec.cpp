@@ -10,15 +10,15 @@ using namespace BSEC;
 BME680BSECComponent *BME680BSECComponent::instance;
 
 int8_t BME680BSECComponent::read_bytes_wrapper(uint8_t a_register, uint8_t *data, uint32_t len, void *intfPtr) {
-  return BME680BSECComponent::instance->read_bytes(a_register, data, len, intfPtr);
+  return static_cast<BME680BSECComponent *>(intfPtr)->read_bytes(a_register, data, len);
 }
 
 int8_t BME680BSECComponent::write_bytes_wrapper(uint8_t a_register, const uint8_t *data, uint32_t len, void *intfPtr) {
-  return BME680BSECComponent::instance->write_bytes(a_register, data, len, intfPtr);
+  return static_cast<BME680BSECComponent *>(intfPtr)->write_bytes(a_register, data, len);
 }
 
 void BME680BSECComponent::delay_us(uint32_t period, void *intfPtr) {
-  BME680BSECComponent::instance->delay_us(period, intfPtr);
+  static_cast<BME680BSECComponent *>(intfPtr)->delay_us(period);
 }
 
 void BME680BSECComponent::setup() {
