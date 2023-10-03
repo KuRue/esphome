@@ -20,24 +20,12 @@ void BME680BSECComponent::setup() {
   ESP_LOGCONFIG(TAG, "Setting up BME680 via BSEC...");
   BME680BSECComponent::instance = this;
 
-  if (!BME680BSECComponent::bsec_instance) {
-    /* allocate memory for the instance if not allocated */
-    BME680BSECComponent::bsec_instance = new uint8_t[bsec_get_instance_size_m()];
-  }
-
-  if (BSEC_INSTANCE_SIZE < bsec_get_instance_size_m()) {
-    this->bsec_status_ = BSEC_E_INSUFFICIENT_INSTANCE_SIZE;
-    this->mark_failed();
-    return;
-  }
-  
-  this->bsec_status_ = bsec_init_m(BME680BSECComponent::bsec_instance);
+  this->bsec_status_ = bsec_init();
   if (this->bsec_status_ != BSEC_OK) {
     this->mark_failed();
     return;
   }
 
-  // Initialize BME680
   this->bme680_.intf = BME68X_I2C_INTF;
   this->bme680_.read = BME680BSECComponent::read_bytes_wrapper;
   this->bme680_.write = BME680BSECComponent::write_bytes_wrapper;
@@ -49,27 +37,23 @@ void BME680BSECComponent::setup() {
     this->mark_failed();
     return;
   }
-
-  // Set BSEC configuration if available
   #ifdef BME680_BSEC_CONFIGURATION
   this->set_config_(bsec_configuration, sizeof(bsec_configuration));
   if (this->bsec_status_ != BSEC_OK) {
     this->mark_failed();
     return;
   }
+
   #endif
 
-  // Update BSEC subscription
   this->update_subscription_();
   if (this->bsec_status_ != BSEC_OK) {
     this->mark_failed();
     return;
   }
 
-  // Load BSEC state
   this->load_state_();
 }
-
 
 void BME680BSECComponent::set_config_(const uint8_t *config, uint32_t len) {
   if (len>BSEC_MAX_PROPERTY_BLOB_SIZE) {
