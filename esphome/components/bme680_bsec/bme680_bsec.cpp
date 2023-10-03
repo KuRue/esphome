@@ -1,5 +1,4 @@
 #include <bsec2.h>
-using namespace BSEC;
 #include "esphome/core/component.h"
 #include "esphome/components/sensor/sensor.h"
 #include "bme680_bsec.h"
