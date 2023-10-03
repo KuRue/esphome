@@ -1,34 +1,27 @@
-#include "esphome/core/log.h"
 #include "bme680_bsec.h"
+#include "esphome/core/log.h"
+#include "esphome/core/helpers.h"
+#include <string>
 
 namespace esphome {
 namespace bme680_bsec {
-
 #ifdef USE_BSEC
-using namespace BSEC;
+static const char *const TAG = "bme680_bsec.sensor";
+
+#ifdef BME680_BSEC_CONFIGURATION
+static const uint8_t bsec_configuration[] = BME680_BSEC_CONFIGURATION;
 #endif
 
-BME680BSECComponent *BME680BSECComponent::instance;
+static const std::string IAQ_ACCURACY_STATES[4] = {"Stabilizing", "Uncertain", "Calibrating", "Calibrated"};
 
-int8_t BME680BSECComponent::read_bytes_wrapper(uint8_t a_register, uint8_t *data, uint32_t len, void *intfPtr) {
-  return static_cast<BME680BSECComponent *>(intfPtr)->read_bytes(a_register, data, len);
-}
-
-int8_t BME680BSECComponent::write_bytes_wrapper(uint8_t a_register, const uint8_t *data, uint32_t len, void *intfPtr) {
-  return static_cast<BME680BSECComponent *>(intfPtr)->write_bytes(a_register, data, len);
-}
-
-void BME680BSECComponent::delay_us(uint32_t &period, void *intfPtr) {
-  static_cast<BME680BSECComponent *>(intfPtr)->delay_us(period);
-}
+BME680BSECComponent *BME680BSECComponent::instance;  // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 
 void BME680BSECComponent::setup() {
-  ESP_LOGD(TAG, "Setting up BME680 via BSEC...");
+  ESP_LOGCONFIG(TAG, "Setting up BME680 via BSEC...");
   BME680BSECComponent::instance = this;
 
-  this->bsec_status_ = BSEC::bsec_init();  // Use the BSEC namespace
+  this->bsec_status_ = bsec_init();
   if (this->bsec_status_ != BSEC_OK) {
-    ESP_LOGE(TAG, "BSEC initialization failed");
     this->mark_failed();
     return;
   }
@@ -41,18 +34,17 @@ void BME680BSECComponent::setup() {
 
   this->bme680_status_ = bme68x_init(&this->bme680_);
   if (this->bme680_status_ != BME68X_OK) {
-    ESP_LOGE(TAG, "BME680 initialization failed");
     this->mark_failed();
     return;
   }
-
-#ifdef BME680_BSEC_CONFIGURATION
+  #ifdef BME680_BSEC_CONFIGURATION
   this->set_config_(bsec_configuration, sizeof(bsec_configuration));
   if (this->bsec_status_ != BSEC_OK) {
     this->mark_failed();
     return;
   }
-#endif
+
+  #endif
 
   this->update_subscription_();
   if (this->bsec_status_ != BSEC_OK) {
@@ -501,5 +493,6 @@ void BME680BSECComponent::save_state_(uint8_t accuracy) {
 
   ESP_LOGI(TAG, "Saved state");
 }
+#endif
 }  // namespace bme680_bsec
 }  // namespace esphome
