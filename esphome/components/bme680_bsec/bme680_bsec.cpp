@@ -20,13 +20,8 @@ void BME680BSECComponent::setup() {
   ESP_LOGCONFIG(TAG, "Setting up BME680 via BSEC...");
   BME680BSECComponent::instance = this;
 
-  //this->bsec_status_ = bsec_init();
-  //if (this->bsec_status_ != BSEC_OK) {
-  //  this->mark_failed();
-  //  return;
-  //}
-
-  if (! begin()) {
+  this->bsec_status_ = bsec_init();
+  if (this->bsec_status_ != BSEC_OK) {
     this->mark_failed();
     return;
   }
