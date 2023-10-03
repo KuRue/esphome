@@ -20,8 +20,20 @@ void BME680BSECComponent::setup() {
   ESP_LOGCONFIG(TAG, "Setting up BME680 via BSEC...");
   BME680BSECComponent::instance = this;
 
-  // Initialize BSEC
-  if (!this->begin(/* pass your required parameters here */)) {
+  // Initialize BSEC instance
+  if (!this->bsecInstance) {
+    /* allocate memory for the instance if not allocated */
+    this->bsecInstance = new uint8_t[bsec_get_instance_size_m()];
+  }
+
+  if (BSEC_INSTANCE_SIZE < bsec_get_instance_size_m()) {
+    this->bsec_status_ = BSEC_E_INSUFFICIENT_INSTANCE_SIZE;
+    this->mark_failed();
+    return;
+  }
+  
+  this->bsec_status_ = bsec_init_m(this->bsecInstance);
+  if (this->bsec_status_ != BSEC_OK) {
     this->mark_failed();
     return;
   }
