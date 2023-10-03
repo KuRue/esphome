@@ -76,5 +76,5 @@ async def to_code(config):
         "BSEC2 Software Library",
         #"v1.4.2200",
         #"https://github.com/BoschSensortec/Bosch-BSEC2-Library.git",
-        "https://github.com/BoschSensortec/Bosch-BSEC2-Library.git#1.4.2200",
+        "https://github.com/boschsensortec/Bosch-BSEC2-Library/tree/aeb4e4931fccdd8524c0b40d14aa2c5eec599ff6",
     )
